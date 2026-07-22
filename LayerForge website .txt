@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LayerForge | 3D Printed Fidget Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white pb-12">
+
+    <!-- Top Navigation with LayerForge Branding -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-md mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2.5 cursor-pointer" onclick="showCatalog()">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-500/30 text-base tracking-tighter">LF</div>
+                <div>
+                    <span class="font-black text-lg tracking-wider text-white block leading-tight">LAYERFORGE</span>
+                    <span class="text-[10px] text-indigo-400 font-medium tracking-widest uppercase block">3D Printed Fidgets</span>
+                </div>
+            </div>
+            <div class="relative flex items-center gap-3">
+                <button onclick="openCartModal()" class="relative p-2.5 bg-slate-800 rounded-full hover:bg-slate-700 active:scale-95 transition shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-indigo-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-md hidden animate-bounce">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Container -->
+    <main class="max-w-md mx-auto px-4 py-6 w-full flex-grow">
+        
+        <!-- CATALOG VIEW -->
+        <div id="catalog-view">
+            <div class="mb-6 bg-gradient-to-r from-indigo-950/50 to-slate-900 border border-indigo-500/20 rounded-2xl p-4 shadow-xl">
+                <h1 class="text-xl font-black text-white mb-1">Welcome to LayerForge! 🚀</h1>
+                <p class="text-slate-300 text-xs leading-relaxed">High-grade 3D printed sensory and articulating fidget toys. Tap any product to customize and order.</p>
+            </div>
+
+            <!-- Product Cards Grid -->
+            <div id="product-list" class="grid grid-cols-1 gap-3.5">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- PRODUCT DETAIL VIEW (Hidden by default) -->
+        <div id="detail-view" class="hidden">
+            <button onclick="showCatalog()" class="mb-4 inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-medium bg-slate-800/60 px-3 py-1.5 rounded-xl border border-slate-700/60 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Catalog
+            </button>
+
+            <!-- Product Image Showcase -->
+            <div class="relative bg-gradient-to-br from-slate-800 to-slate-950 rounded-3xl p-6 border border-slate-800 shadow-2xl mb-6 text-center overflow-hidden">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none"></div>
+                <span class="absolute top-4 left-4 bg-indigo-500/20 text-indigo-400 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-500/30 backdrop-blur">LayerForge PLA+</span>
+                
+                <div class="py-10 flex justify-center items-center">
+                    <div id="detail-icon-bg" class="w-36 h-36 rounded-3xl bg-indigo-600/30 border-2 border-indigo-500 flex items-center justify-center shadow-xl shadow-indigo-500/20 transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 italic">Precision Printed &bull; Built to Last</p>
+            </div>
+
+            <!-- Product Header Details -->
+            <div class="mb-5">
+                <h1 id="detail-title" class="text-2xl font-bold text-white mb-1">Product Name</h1>
+                <div class="flex items-center justify-between mb-3">
+                    <span id="detail-price" class="text-2xl font-black text-indigo-400">$0.00</span>
+                    <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">⚡ Ready to Print</span>
+                </div>
+                <p id="detail-desc" class="text-slate-300 text-sm leading-relaxed">Description goes here.</p>
+            </div>
+
+            <!-- Size Selector -->
+            <div id="size-selector-container" class="mb-5 bg-slate-950/40 p-4 rounded-2xl border border-slate-800 hidden">
+                <label class="block text-sm font-medium text-slate-300 mb-2.5">
+                    Select Size: <span id="selected-size-label" class="font-bold text-white"></span>
+                </label>
+                <div id="size-options" class="flex flex-wrap gap-2.5">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- Custom Print Instructions Box (Only shown for custom print) -->
+            <div id="custom-instructions-container" class="mb-5 bg-slate-950/40 p-4 rounded-2xl border border-indigo-500/40 hidden">
+                <label class="block text-sm font-medium text-indigo-300 mb-1.5 flex items-center justify-between">
+                    <span>Describe Your Custom Print:</span>
+                    <span class="text-xs text-slate-400">Required</span>
+                </label>
+                <textarea id="custom-note" rows="3" placeholder="Describe the model idea, dimensions, or special requests..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"></textarea>
+            </div>
+
+            <!-- Color Variant Selector -->
+            <div class="mb-8 bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
+                <label class="block text-sm font-medium text-slate-300 mb-2.5">
+                    Filament Color: <span id="selected-color-name" class="font-bold text-white">Electric Indigo</span>
+                </label>
+                <div class="flex gap-4">
+                    <button onclick="setColor('Electric Indigo', 'bg-indigo-600')" class="color-btn w-11 h-11 rounded-full bg-indigo-600 border-2 border-white ring-2 ring-indigo-500/60 focus:outline-none transition transform hover:scale-110 shadow-md" data-name="Electric Indigo" title="Electric Indigo"></button>
+                    <button onclick="setColor('Neon Green', 'bg-emerald-500')" class="color-btn w-11 h-11 rounded-full bg-emerald-500 border-2 border-transparent focus:outline-none transition transform hover:scale-110 shadow-md" data-name="Neon Green" title="Neon Green"></button>
+                    <button onclick="setColor('Sunset Orange', 'bg-orange-500')" class="color-btn w-11 h-11 rounded-full bg-orange-500 border-2 border-transparent focus:outline-none transition transform hover:scale-110 shadow-md" data-name="Sunset Orange" title="Sunset Orange"></button>
+                    <button onclick="setColor('Matte Black', 'bg-slate-800')" class="color-btn w-11 h-11 rounded-full bg-slate-800 border-2 border-transparent focus:outline-none transition transform hover:scale-110 shadow-md" data-name="Matte Black" title="Matte Black"></button>
+                </div>
+            </div>
+
+            <!-- Add to Cart Action -->
+            <button onclick="addCurrentProductToCart()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] text-white font-semibold py-4 px-4 rounded-2xl shadow-xl shadow-indigo-600/30 transition flex items-center justify-center gap-2.5 text-base">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add to Cart &bull; <span id="btn-price-label">$0.00</span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Cart / Checkout Modal -->
+    <div id="cart-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-white">Your LayerForge Cart</h3>
+                <button onclick="closeCartModal()" class="text-slate-400 hover:text-white p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Cart Items List -->
+            <div id="cart-items-container" class="flex-grow overflow-y-auto space-y-3 mb-4 pr-1">
+                <!-- Dynamically populated -->
+            </div>
+
+            <div id="cart-footer" class="border-t border-slate-800 pt-4 mt-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-slate-400 text-sm">Total:</span>
+                    <span id="cart-total-price" class="text-xl font-bold text-indigo-400">$0.00</span>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeCartModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 rounded-xl transition text-sm">Keep Shopping</button>
+                    <button onclick="checkoutOrder()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/30">Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 bg-slate-950/40">
+        <p>&copy; 2026 LayerForge &bull; Custom 3D Printed Creations</p>
+    </footer>
+
+    <!-- Interactive Script -->
+    <script>
+        const products = [
+            {
+                id: 'hexagon',
+                name: 'Sensory Hexagon Fidget',
+                desc: 'Smooth tactile snaps and interlocking modular design. Available in multiple sizes.',
+                sizes: [
+                    { name: '5 inch', price: 1.00 },
+                    { name: '6 inch', price: 1.50 },
+                    { name: '7 inch', price: 2.00 },
+                    { name: '8 inch', price: 2.25 },
+                    { name: '9 inch', price: 2.50 },
+                    { name: '10 inch', price: 3.00 }
+                ]
+            },
+            {
+                id: 'snake',
+                name: 'Articulated Snake',
+                desc: 'Flexible multi-jointed slithering snake toy with satisfying tactile movement.',
+                sizes: [
+                    { name: 'Small', price: 3.00 },
+                    { name: 'Medium', price: 4.00 },
+                    { name: 'Large', price: 6.00 }
+                ]
+            },
+            {
+                id: 'dragon',
+                name: 'Articulated Dragon',
+                desc: 'Fully flexible, multi-jointed 3D printed dragon with gorgeous scale details.',
+                sizes: [
+                    { name: 'Small', price: 3.00 },
+                    { name: 'Medium', price: 4.00 },
+                    { name: 'Large', price: 6.00 }
+                ]
+            },
+            {
+                id: 'minecraft_fidget',
+                name: 'Minecraft Fidget Toy',
+                desc: 'Block-inspired tactile fidget toy designed for endless folding & clicking.',
+                sizes: [
+                    { name: 'Small', price: 2.00 },
+                    { name: 'Medium', price: 4.00 },
+                    { name: 'Large', price: 6.00 }
+                ]
+            },
+            {
+                id: 'twelve_in_one',
+                name: '12-in-1 Sensory Fidget',
+                desc: 'Ultimate multi-activity desk toy packed with switches, clickers, and spinners.',
+                sizes: [ { name: 'Standard', price: 5.00 } ]
+            },
+            {
+                id: 'minecraft_block',
+                name: 'Minecraft Block Fidget',
+                desc: 'Iconic pixelated cube design built with interlocking mechanism.',
+                sizes: [ { name: 'Standard', price: 4.00 } ]
+            },
+            {
+                id: 'clicker',
+                name: 'Mechanical Clicker',
+                desc: 'Crisp tactile button clicker designed for satisfying sensory feedback.',
+                sizes: [ { name: 'Standard', price: 2.00 } ]
+            },
+            {
+                id: 'mystery',
+                name: 'Mystery Gift Fidget',
+                desc: 'Surprise high-quality 3D printed fidget toy picked from our secret stash!',
+                sizes: [ { name: 'Standard', price: 1.50 } ]
+            },
+            {
+                id: 'custom',
+                name: 'Custom 3D Print Request',
+                desc: 'Have a specific design or custom color combination in mind? We will print it for you!',
+                sizes: [ { name: 'Custom Base', price: 3.00 } ]
+            }
+        ];
+
+        let cart = [];
+        let currentProduct = null;
+        let selectedSizeIndex = 0;
+        let selectedColor = 'Electric Indigo';
+
+        function renderCatalog() {
+            const listEl = document.getElementById('product-list');
+            listEl.innerHTML = products.map(p => `
+                <div onclick="selectProduct('${p.id}')" class="bg-slate-950/40 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition transform hover:scale-[1.01] shadow-lg group">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-base">${p.name}</h3>
+                            <p class="text-xs text-slate-400">From $${p.sizes[0].price.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <div class="bg-indigo-600/20 text-indigo-400 p-2 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectProduct(id) {
+            currentProduct = products.find(p => p.id === id);
+            selectedSizeIndex = 0;
+            
+            document.getElementById('catalog-view').classList.add('hidden');
+            document.getElementById('detail-view').classList.remove('hidden');
+
+            document.getElementById('detail-title').innerText = currentProduct.name;
+            document.getElementById('detail-desc').innerText = currentProduct.desc;
+
+            const sizeContainer = document.getElementById('size-selector-container');
+            const sizeOptionsEl = document.getElementById('size-options');
+            const customContainer = document.getElementById('custom-instructions-container');
+            
+            if (currentProduct.id === 'custom') {
+                customContainer.classList.remove('hidden');
+                document.getElementById('custom-note').value = '';
+            } else {
+                customContainer.classList.add('hidden');
+            }
+
+            if (currentProduct.sizes.length > 1) {
+                sizeContainer.classList.remove('hidden');
+                sizeOptionsEl.innerHTML = currentProduct.sizes.map((s, idx) => `
+                    <button onclick="selectSize(${idx})" id="size-btn-${idx}" class="size-btn px-3.5 py-2 rounded-xl border text-sm font-medium transition ${idx === 0 ? 'bg-indigo-600 border-indigo-500 text-white shadow-md' : 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800'}">
+                        ${s.name} ($${s.price.toFixed(2)})
+                    </button>
+                `).join('');
+                document.getElementById('selected-size-label').innerText = currentProduct.sizes[0].name;
+            } else {
+                sizeContainer.classList.add('hidden');
+            }
+
+            updatePriceDisplay();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectSize(idx) {
+            selectedSizeIndex = idx;
+            document.querySelectorAll('.size-btn').forEach((btn, i) => {
+                if (i === idx) {
+                    btn.className = 'size-btn px-3.5 py-2 rounded-xl border text-sm font-medium transition bg-indigo-600 border-indigo-500 text-white shadow-md';
+                } else {
+                    btn.className = 'size-btn px-3.5 py-2 rounded-xl border text-sm font-medium transition bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800';
+                }
+            });
+            document.getElementById('selected-size-label').innerText = currentProduct.sizes[idx].name;
+            updatePriceDisplay();
+        }
+
+        function updatePriceDisplay() {
+            const price = currentProduct.sizes[selectedSizeIndex].price;
+            document.getElementById('detail-price').innerText = `$${price.toFixed(2)}`;
+            document.getElementById('btn-price-label').innerText = `$${price.toFixed(2)}`;
+        }
+
+        function setColor(name, colorClass) {
+            selectedColor = name;
+            document.getElementById('selected-color-name').innerText = name;
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                if (btn.getAttribute('data-name') === name) {
+                    btn.classList.add('border-white', 'ring-2', 'ring-indigo-500/60');
+                } else {
+                    btn.classList.remove('border-white', 'ring-2', 'ring-indigo-500/60');
+                    btn.classList.add('border-transparent');
+                }
+            });
+        }
+
+        function showCatalog() {
+            document.getElementById('detail-view').classList.add('hidden');
+            document.getElementById('catalog-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function addCurrentProductToCart() {
+            const sizeObj = currentProduct.sizes[selectedSizeIndex];
+            let customNote = '';
+
+            if (currentProduct.id === 'custom') {
+                customNote = document.getElementById('custom-note').value.trim();
+                if (!customNote) {
+                    alert('Please enter a description for your custom print request!');
+                    return;
+                }
+            }
+
+            cart.push({
+                name: currentProduct.name,
+                size: sizeObj.name,
+                price: sizeObj.price,
+                color: selectedColor,
+                customNote: customNote
+            });
+
+            updateCartBadge();
+            
+            const btn = document.querySelector('#detail-view button:last-of-type');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `✓ Added to Cart!`;
+            btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
+            btn.classList.add('bg-emerald-600');
+
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('bg-emerald-600');
+                btn.classList.add('bg-indigo-600', 'hover:bg-indigo-500');
+            }, 1200);
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            if (cart.length > 0) {
+                badge.innerText = cart.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function openCartModal() {
+            const container = document.getElementById('cart-items-container');
+            const totalEl = document.getElementById('cart-total-price');
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-500 text-sm">Your cart is currently empty.</div>`;
+                totalEl.innerText = '$0.00';
+            } else {
+                let total = 0;
+                container.innerHTML = cart.map((item, index) => {
+                    total += item.price;
+                    return `
+                        <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-3 flex justify-between items-start text-sm">
+                            <div>
+                                <h4 class="font-bold text-white">${item.name}</h4>
+                                <p class="text-xs text-slate-400">${item.size} &bull; ${item.color}</p>
+                                ${item.customNote ? `<p class="text-xs text-indigo-300 mt-1 italic bg-indigo-950/40 p-1.5 rounded border border-indigo-500/20">"${item.customNote}"</p>` : ''}
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-semibold text-indigo-400">$${item.price.toFixed(2)}</span>
+                                <button onclick="removeFromCart(${index})" class="text-slate-500 hover:text-red-400 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                totalEl.innerText = `$${total.toFixed(2)}`;
+            }
+
+            document.getElementById('cart-modal').classList.remove('hidden');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartBadge();
+            openCartModal();
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
+
+        function checkoutOrder() {
+            if (cart.length === 0) return;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            alert(`Thank you for ordering with LayerForge! Total amount: $${total.toFixed(2)}. Preparing your custom 3D prints for production!`);
+            cart = [];
+            updateCartBadge();
+            closeCartModal();
+            showCatalog();
+        }
+
+        window.onload = renderCatalog;
+    </script>
+</body>
+</html>
+
